@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 # Check OpenClaw logs for Swiggy session expiry and send a desktop notification.
-# Add to crontab to run after the sneak-treat cron job:
-#   5 3 * * * /path/to/sneak-treat/scripts/session-notify.sh
+# Add to crontab:
+#   0 * * * * /path/to/swiggy-agent/scripts/session-notify.sh
 #
 # Supports macOS (osascript), Linux (notify-send), or falls back to stderr.
 
 LOG_DIR="$HOME/.openclaw/logs"
 LOG_FILE="$LOG_DIR/gateway.log"
 
-# Only check log entries from the last 2 hours (covers cron run + buffer)
-# Uses ISO 8601 date prefix matching to avoid false positives from old entries
+# Only check log entries from the last 2 hours
 HOUR_AGO=$(date -u -v-2H +%Y-%m-%dT%H 2>/dev/null || date -u -d '2 hours ago' +%Y-%m-%dT%H 2>/dev/null || "")
 NOW_HOUR=$(date -u +%Y-%m-%dT%H 2>/dev/null || "")
 
@@ -28,12 +27,12 @@ else
 fi
 
 if [ -n "$RECENT_ERRORS" ]; then
-  MSG="Swiggy session expired. Re-authenticate in OpenClaw."
+  MSG="Swiggy session expired. Re-authenticate in OpenClaw using mcporter."
   if command -v osascript &>/dev/null; then
-    osascript -e "display notification \"$MSG\" with title \"Sneak Treat\" sound name \"Basso\""
+    osascript -e "display notification \"$MSG\" with title \"Swiggy Agent\" sound name \"Basso\""
   elif command -v notify-send &>/dev/null; then
-    notify-send "Sneak Treat" "$MSG"
+    notify-send "Swiggy Agent" "$MSG"
   else
-    echo "[sneak-treat] $(date): $MSG" >&2
+    echo "[swiggy-agent] $(date): $MSG" >&2
   fi
 fi

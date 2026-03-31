@@ -1,6 +1,6 @@
 {
-  "name": "order-eggs-chicken",
-  "description": "Add eggs and chicken to the Swiggy Instamart cart via MCP",
-  "tools": ["mcp:swiggy-instamart"],
-  "version": "1.0.0"
+  "name": "swiggy-agent",
+  "description": "Openclaw skill to place Swiggy orders across Food, Instamart, and Dineout using the Swiggy MCP.",
+  "tools": ["mcp:swiggy-instamart", "mcp:swiggy-food", "mcp:swiggy-dineout"],
+  "version": "1.1.0"
 }
