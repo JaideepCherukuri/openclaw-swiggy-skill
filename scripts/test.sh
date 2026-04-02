@@ -14,7 +14,7 @@ fi
 echo "[OK] Gateway is running"
 
 # Check skill is installed
-SKILL_DIR="$HOME/.openclaw/skills/swiggy-agent"
+SKILL_DIR="$HOME/.openclaw/skills/openclaw-swiggy-skill"
 if [ ! -f "$SKILL_DIR/SKILL.md" ]; then
   echo "FAIL: Skill not installed at $SKILL_DIR"
   echo "Run: ./scripts/install.sh"
@@ -30,10 +30,10 @@ fi
 
 echo "[OK] mcporter is installed"
 echo ""
-echo "Note: You must manually run 'mcporter auth swiggy-food' (or instamart/dineout) to complete testing."
+echo "Note: You must run the unified Python auth script (e.g., 'python3 ~/.openclaw/skills/openclaw-swiggy-skill/scripts/swiggy_unified_mcp_login.py') first."
 echo "Running the Swiggy Agent in a dry-run test mode..."
 echo "---"
-RESULT=$(openclaw agent --agent omi -m "Run the Swiggy Agent skill to search for pizzas on swiggy-food. Do NOT place an order. Tell me what you found." 2>&1)
+RESULT=$(openclaw agent --agent omi -m "Run the Swiggy Agent skill to search for pizzas. Do NOT place an order. Tell me what you found." 2>&1)
 echo "$RESULT"
 echo "---"
 
