@@ -9,6 +9,31 @@ Use this skill when working on the bot's execution model, not just one-off bug p
 
 Read `references/runtime-architecture.md` before major runtime changes.
 
+## 🚨 OPERATIONAL PLAYBOOK (HOW TO USE THE TOOLS) 🚨
+
+**CRITICAL RULE FOR AGENTS:** Do NOT run `swiggy_unified_mcp.py` via shell `exec` or `python3` to search for products. It is a background MCP server, NOT a CLI script. It is automatically registered in OpenClaw. You must use your native tool-calling capability to execute `search_products`, `get_addresses`, `search_restaurants`, etc.
+
+When a user asks you to search or order something on Swiggy, strictly follow these deterministic sequences:
+
+### For Instamart (Groceries, Daily Needs):
+1. **Get Address:** Call the `get_addresses` tool. Identify the correct `addressId` for the user's location. (Mandatory: Do NOT skip this).
+2. **Search:** Call the `search_products` tool with `query="<user_query>"` and `addressId="<the_id>"`.
+3. **Present:** Surface the results using the Presentation Playbook rules below.
+4. **Cart:** To add to cart, use `update_cart`.
+
+### For Food (Restaurant Delivery):
+1. **Get Address:** Call the `get_addresses` tool. Identify the correct `addressId`. (Mandatory).
+2. **Search:** Call the `search_restaurants` tool with `query="<user_query>"` and `addressId="<the_id>"`.
+3. **Present:** Surface the results using the Presentation Playbook rules below.
+4. **Menu:** If the user selects a restaurant, use `search_menu` with `restaurantId`.
+
+### For Dineout (Table Booking):
+1. **Get Address:** Call the `get_addresses` tool. Identify the correct `addressId`.
+2. **Search:** Call the `search_restaurants_dineout` tool with `query="<user_query>"` (e.g., "lunch", "brewery", or specific name) and the coordinates derived from the address.
+3. **Present:** Surface the results using the Presentation Playbook rules below.
+
+---
+
 ## Core stance
 
 Treat the bot as an agent runtime with layers, not as a single prompt with tools.
