@@ -116,36 +116,26 @@ Follow these strict rules when presenting options to the user:
 - For Food/Instamart items, include an "Add to Cart 🛒" button (e.g., `callback_data: "/add <id>"`).
 - For Dineout restaurants, include a "Book a Table 📅" button (e.g., `callback_data: "/book <id>"`).
 
-## OpenClaw Playbook: Headless Authentication & Login
+## OpenClaw Playbook: Unified Headless Authentication & Login
 
-When an OpenClaw agent needs to authenticate to the Swiggy MCP servers (`swiggy-instamart`, `swiggy-food`, `swiggy-dineout`), the agent must bridge the headless OAuth flow. Since the agent runs on a remote VM, the `127.0.0.1` OAuth callback URL will fail to resolve on the user's local device.
+Instead of authenticating Food, Instamart, and Dineout separately, use the provided `swiggy_unified_mcp.py` proxy script. This Python script bridges all three Swiggy MCP endpoints behind a single `stdio` MCP server and uses a single shared OAuth token.
 
-**Crucial Notes:**
-- Authenticating `swiggy-instamart` automatically covers `swiggy-food` (they share the same token).
-- `swiggy-dineout` requires its own separate authentication run.
-
-### The Step-by-Step Playbook for Agents:
-1. **Start the auth flow in the background**
-   Use `mcporter auth` combined with the `process` tool to keep it running:
-   ```bash
-   mcporter auth swiggy-instamart
+### Setup Instructions for OpenClaw:
+1. Ensure the Python `mcp` SDK is installed: `pip install mcp`
+2. Update your OpenClaw `mcporter.json` to route Swiggy to the unified proxy:
+   ```json
+   "swiggy": {
+     "command": "python3 /path/to/swiggy_unified_mcp.py"
+   }
    ```
-2. **Extract the Authorization URL**
-   Use `process(action="log")` to read the background session's output. Look for the URL starting with `https://mcp.swiggy.com/auth/authorize?...`
-3. **Send the URL to the user**
-   Send a message to the user containing the link. 
-   *Crucial: Explicitly tell the user that after they log in and enter the OTP, the page will crash or redirect to a broken `127.0.0.1:PORT` link.*
-4. **Instruct the user to copy the broken link**
-   Ask the user to copy the full `http://127.0.0.1:PORT/callback?code=...` URL from their browser's address bar and paste it back to you in the chat.
-5. **Complete the loop via curl**
-   Once the user pastes the callback URL, run a `curl` command to that exact URL (wrapped in quotes) on the agent side to complete the OAuth loop:
+3. Run `mcporter auth swiggy`. The Python script will output the Swiggy Auth URL to `stderr` (which `mcporter` will show you).
+4. Send the Auth URL to the user.
+5. Once the user logs in and gets redirected to the broken `localhost:39025` link, ask them to copy the URL.
+6. Run a `curl` to that exact localhost URL on the VM to complete the loop:
    ```bash
-   curl "http://127.0.0.1:PORT/callback?code=..."
+   curl "http://127.0.0.1:39025/callback?code=..."
    ```
-6. **Verify and cleanup**
-   Check the `curl` output for `Authorization successful`. Then kill the background `mcporter` process, and verify the tools are available using `mcporter list swiggy-instamart`.
-7. **Repeat for Dineout**
-   Repeat the exact same process for `swiggy-dineout`.
+7. The Python proxy will save the unified token to `~/.swiggy_tokens_unified.json` and automatically deduplicate and expose all 28 tools across Food, Instamart, and Dineout under the single `swiggy` MCP server.
 
 ## Editing guidance
 
