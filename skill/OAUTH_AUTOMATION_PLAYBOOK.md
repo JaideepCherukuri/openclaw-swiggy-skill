@@ -12,10 +12,13 @@ playwright install chromium
 ## Step-by-Step Flow
 
 1. **Ask for Phone Number:** Ask the user for their 10-digit Swiggy registered phone number.
-2. **Start the MCP Login:** Run the Swiggy unified MCP login script (e.g. `swiggy_unified_mcp_login.py`) in the background. This will print an Authorization URL (starting with `https://mcp.swiggy.com/auth/authorize?...`).
+2. **Start the MCP Login:** Run the Swiggy unified MCP login script in the background. This will print an Authorization URL (starting with `https://mcp.swiggy.com/auth/authorize?...`).
+   ```bash
+   python3 ~/.openclaw/skills/openclaw-swiggy-skill/scripts/swiggy_unified_mcp_login.py
+   ```
 3. **Run the Playwright Automator:** Run `swiggy_playwright_auth.py` and pass the URL and Phone Number:
    ```bash
-   python3 swiggy_playwright_auth.py --url "THE_AUTH_URL" --phone "1234567890"
+   python3 ~/.openclaw/skills/openclaw-swiggy-skill/scripts/swiggy_playwright_auth.py --url "THE_AUTH_URL" --phone "1234567890"
    ```
 4. **Wait for OTP Prompt:** The script will automatically navigate the consent screens, enter the phone number, and click send. It will pause and print `[ACTION_REQUIRED] Enter OTP: ` to stdout.
 5. **Ask for OTP:** Once the script is waiting, ask the user for the OTP sent to their phone.

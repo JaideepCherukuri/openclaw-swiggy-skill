@@ -124,14 +124,14 @@ You have two options for completing this flow. **Prefer Option 1 (Zero-Click) fo
 
 ### Option 1: Zero-Click Automation (Preferred)
 Use the automated Playwright script to handle the login entirely on the agent side.
-1. Run the MCP login script (e.g., `python3 swiggy_unified_mcp_login.py`) in the background to generate the Auth URL.
+1. Run the MCP login script (`python3 ~/.openclaw/skills/openclaw-swiggy-skill/scripts/swiggy_unified_mcp_login.py`) in the background to generate the Auth URL.
 2. Ask the user for their 10-digit Swiggy phone number.
-3. Run the automation script: `python3 swiggy_playwright_auth.py --url "AUTH_URL" --phone "PHONE_NUMBER"`.
+3. Run the automation script: `python3 ~/.openclaw/skills/openclaw-swiggy-skill/scripts/swiggy_playwright_auth.py --url "AUTH_URL" --phone "PHONE_NUMBER"`.
 4. The script will navigate Swiggy and ask for an OTP via `stdin`. Ping the user for the OTP, and pipe it in. The script will automatically intercept the `localhost` redirect and hit the callback server.
 
 ### Option 2: Manual Callback Paste (Fallback)
 If the user prefers manual login or automation fails, use the manual copy-paste method:
-1. Run the MCP auth script in the background to generate the Auth URL.
+1. Run the MCP auth script (`python3 ~/.openclaw/skills/openclaw-swiggy-skill/scripts/swiggy_unified_mcp_login.py`) in the background to generate the Auth URL.
 2. Send the `https://mcp.swiggy.com/auth/...` URL to the user in chat.
 3. Tell the user: *"Please click this link, log in, and enter your OTP. After successful login, your browser will try to load a broken `http://localhost:39025/...` or `http://127.0.0.1...` page. Copy that entire broken URL from your address bar and paste it back here."*
 4. Once the user pastes the callback URL, run `curl "THE_PASTED_URL"` on the agent side to complete the loop.
