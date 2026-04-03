@@ -231,16 +231,6 @@ async def main():
                     lines = []
                     
                     # Name and price
-                    title_parts = []
-                    if opt.get("isBestseller"):
-                        title_parts.append("🔥 Bestseller")
-                        
-                    if opt.get("type") in ["food", "instamart"] and "isVeg" in opt:
-                        if opt.get("isVeg") is True:
-                            title_parts.append("Veg")
-                        elif opt.get("isVeg") is False:
-                            title_parts.append("Non-Veg")
-                    
                     name_part = opt.get('name', 'Unknown')
                     if opt.get("price"):
                         price = opt['price']
@@ -249,9 +239,21 @@ async def main():
                         else:
                             name_part += f" (₹{price})"
                     
-                    title_parts.append(f"**{name_part}**")
+                    lines.append(f"**{name_part}**")
                     
-                    lines.append(" • ".join(title_parts))
+                    # Tags line
+                    tags = []
+                    if opt.get("isBestseller"):
+                        tags.append("🔥 Bestseller")
+                        
+                    if opt.get("type") in ["food", "instamart"] and "isVeg" in opt:
+                        if opt.get("isVeg") is True:
+                            tags.append("Veg")
+                        elif opt.get("isVeg") is False:
+                            tags.append("Non-Veg")
+                            
+                    if tags:
+                        lines.append(" • ".join(tags))
                     
                     if opt.get("description"):
                         lines.append(f"_{opt['description']}_")
