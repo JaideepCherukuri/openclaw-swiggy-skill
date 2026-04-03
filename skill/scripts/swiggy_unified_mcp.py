@@ -234,6 +234,12 @@ async def main():
                     title_parts = []
                     if opt.get("isBestseller"):
                         title_parts.append("🔥 Bestseller")
+                        
+                    if opt.get("type") in ["food", "instamart"] and "isVeg" in opt:
+                        if opt.get("isVeg") is True:
+                            title_parts.append("Veg")
+                        elif opt.get("isVeg") is False:
+                            title_parts.append("Non-Veg")
                     
                     name_part = opt.get('name', 'Unknown')
                     if opt.get("price"):
